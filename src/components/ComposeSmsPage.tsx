@@ -6,7 +6,7 @@ import { SmsRecord } from './smsData';
 import { TextAreaField, SelectField } from './FormControls';
 import AiGenerateSmsModal from './AiGenerateSmsModal';
 import { generateWithGemini } from '../services/geminiClient';
-import { branding } from '../config/branding';
+import { getBrand } from '../config/branding';
 import { smsService } from '../services/smsService';
 import { storage } from '../services/storage';
 
@@ -94,7 +94,7 @@ const ComposeSmsPage: React.FC<ComposeSmsPageProps> = ({ members, groups: _group
         return;
       }
 
-      const fullPrompt = `You are a friendly church pastor for ${branding.churchName.toUpperCase()}. Write a short, concise SMS message (under 160 characters) based on the following instruction: "${prompt}". Make it sound warm and personal. Do not include placeholders like [Name] unless specified in the user's instruction.`;
+      const fullPrompt = `You are a friendly church pastor for ${getBrand().churchName.toUpperCase()}. Write a short, concise SMS message (under 160 characters) based on the following instruction: "${prompt}". Make it sound warm and personal. Do not include placeholders like [Name] unless specified in the user's instruction.`;
 
       const text = await generateWithGemini(fullPrompt, { model: 'gemini-2.5-flash' });
 

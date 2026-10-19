@@ -47,6 +47,15 @@ jobs:
         VITE_SUPABASE_GRAPHQL_URL: ${{ vars.VITE_SUPABASE_GRAPHQL_URL }}
         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+        # White-label branding (non-secret, repo Variables)
+        VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
+        VITE_CHURCH_NAME: ${{ vars.VITE_CHURCH_NAME }}
+        VITE_CHURCH_SHORT_NAME: ${{ vars.VITE_CHURCH_SHORT_NAME }}
+        VITE_LOGO_PATH: ${{ vars.VITE_LOGO_PATH }}
+        VITE_CHURCH_WEBSITE: ${{ vars.VITE_CHURCH_WEBSITE }}
+        VITE_ORG_EMAIL_DOMAIN: ${{ vars.VITE_ORG_EMAIL_DOMAIN }}
+        VITE_SMS_SENDER_ID: ${{ vars.VITE_SMS_SENDER_ID }}
+        VITE_MEMBER_ID_PREFIX: ${{ vars.VITE_MEMBER_ID_PREFIX }}
 
     - name: Secret scan
       uses: gitleaks/gitleaks-action@v2
@@ -84,6 +93,15 @@ jobs:
         VITE_SUPABASE_GRAPHQL_URL: ${{ vars.VITE_SUPABASE_GRAPHQL_URL }}
         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+        # White-label branding (non-secret, repo Variables)
+        VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
+        VITE_CHURCH_NAME: ${{ vars.VITE_CHURCH_NAME }}
+        VITE_CHURCH_SHORT_NAME: ${{ vars.VITE_CHURCH_SHORT_NAME }}
+        VITE_LOGO_PATH: ${{ vars.VITE_LOGO_PATH }}
+        VITE_CHURCH_WEBSITE: ${{ vars.VITE_CHURCH_WEBSITE }}
+        VITE_ORG_EMAIL_DOMAIN: ${{ vars.VITE_ORG_EMAIL_DOMAIN }}
+        VITE_SMS_SENDER_ID: ${{ vars.VITE_SMS_SENDER_ID }}
+        VITE_MEMBER_ID_PREFIX: ${{ vars.VITE_MEMBER_ID_PREFIX }}
 
     - name: Setup Pages
       uses: actions/configure-pages@v4

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { SignIn, SignUp } from '@clerk/clerk-react';
 import { Shield, UserPlus, LogIn } from 'lucide-react';
-import { brandShortCode, branding } from '../config/branding';
+import { useBrand } from '../config/useBrand';
 
 const ClerkAuthPage: React.FC = () => {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const brand = useBrand();
 
   return (
     <div className="min-h-screen bg-[#0f172a] flex flex-col items-center justify-center p-4">
@@ -12,15 +13,15 @@ const ClerkAuthPage: React.FC = () => {
       <div className="lg:hidden w-full flex justify-center mb-8">
         <div className="flex flex-col items-center space-y-3 bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
           <img
-            src={branding.logoPath}
-            alt={`${branding.churchName} Logo`}
+            src={brand.logoPath}
+            alt={`${brand.churchName} Logo`}
             className="h-16 w-auto drop-shadow-2xl border border-white/20 rounded-lg p-2 bg-sky-100 object-contain"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
             }}
           />
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-white">{branding.churchName}</h1>
+            <h1 className="text-2xl font-bold text-white">{brand.churchName}</h1>
             <span className="text-green-400 text-sm font-medium">Church Management System</span>
           </div>
         </div>
@@ -33,20 +34,20 @@ const ClerkAuthPage: React.FC = () => {
           <div className="flex flex-col items-center lg:items-start space-y-4 mb-8">
             <div className="relative">
               <img
-                src={branding.logoPath}
-                alt={`${branding.churchName} Logo`}
+                src={brand.logoPath}
+                alt={`${brand.churchName} Logo`}
                 className="h-24 w-auto drop-shadow-2xl border-2 border-green-500/30 rounded-lg p-3 bg-sky-100 object-contain"
                 onError={(e) => {
                   const fallback = document.createElement('div');
                   fallback.className =
                     'h-24 w-24 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold text-2xl';
-                  fallback.textContent = brandShortCode();
+                  fallback.textContent = brand.shortCode;
                   e.currentTarget.parentNode?.replaceChild(fallback, e.currentTarget);
                 }}
               />
             </div>
             <div className="text-center lg:text-left">
-              <h1 className="text-4xl font-bold tracking-tight">{branding.churchName}</h1>
+              <h1 className="text-4xl font-bold tracking-tight">{brand.churchName}</h1>
               <span className="text-green-400 text-lg font-medium">Church Management System</span>
             </div>
           </div>
@@ -108,8 +109,8 @@ const ClerkAuthPage: React.FC = () => {
               {/* Subtle background logo */}
               <div className="absolute top-4 right-4 opacity-10">
                 <img
-                  src={branding.logoPath}
-                  alt={`${branding.churchName} Logo`}
+                  src={brand.logoPath}
+                  alt={`${brand.churchName} Logo`}
                   className="h-8 w-auto object-contain"
                 />
               </div>

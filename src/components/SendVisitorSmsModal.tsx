@@ -3,7 +3,7 @@ import { Visitor } from './visitorData';
 import { XCircleIcon, PaperAirplaneIcon, UserIcon, PhoneIcon } from './Icons';
 import { TextAreaField } from './FormControls';
 import { generateWithGemini } from '../services/geminiClient';
-import { branding } from '../config/branding';
+import { getBrand } from '../config/branding';
 
 interface SendVisitorSmsModalProps {
   isOpen: boolean;
@@ -27,7 +27,7 @@ const SendVisitorSmsModal: React.FC<SendVisitorSmsModalProps> = ({ isOpen, onClo
   const handleGenerateMessage = async (prompt: string) => {
     setIsGenerating(true);
     try {
-      const fullPrompt = `You are a friendly church pastor for ${branding.churchName.toUpperCase()}. Write a short, concise SMS message (under 160 characters) for a visitor named ${visitor.name}, based on this instruction: "${prompt}". Make it sound warm and personal.`;
+      const fullPrompt = `You are a friendly church pastor for ${getBrand().churchName.toUpperCase()}. Write a short, concise SMS message (under 160 characters) for a visitor named ${visitor.name}, based on this instruction: "${prompt}". Make it sound warm and personal.`;
 
       const text = await generateWithGemini(fullPrompt, { model: 'gemini-2.5-flash' });
 

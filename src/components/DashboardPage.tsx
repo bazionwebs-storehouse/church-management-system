@@ -15,7 +15,7 @@ import { Transaction } from './financeData';
 import { User } from './userData';
 import { useTheme } from './ThemeContext';
 import PageHeader from './PageHeader';
-import { branding } from '../config/branding';
+import { getBrand } from '../config/branding';
 
 const StatCard: React.FC<{
   title: string;
@@ -137,7 +137,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
     <div className="h-full flex flex-col">
       <PageHeader
         title="Dashboard"
-        subtitle={`Welcome to ${branding.appName}. Overview of key metrics and quick actions.`}
+        subtitle={`Welcome to ${getBrand().appName}. Overview of key metrics and quick actions.`}
         icon={<DashboardIcon className="h-8 w-8 text-blue-600" />}
       />
 

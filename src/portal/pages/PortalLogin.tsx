@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Lock, User, AlertCircle, CheckCircle, ArrowRight, Shield, KeyRound } from 'lucide-react';
 import { portalAuthService } from '../services/portalAuth';
 import { branding } from '../../config/branding';
+import { useBrand } from '../../config/useBrand';
 import '../portal.css';
 
 type LoginMode = 'pin' | 'password';
 
 const PortalLogin: React.FC = () => {
+  const brand = useBrand();
   const [membershipNumber, setMembershipNumber] = useState('');
   const [pin, setPin] = useState('');
   const [password, setPassword] = useState('');
@@ -116,9 +118,9 @@ const PortalLogin: React.FC = () => {
           {/* Header with Logo */}
           <div className="portal-header">
             <div className="portal-logo-wrap">
-              <img src={branding.logoPath} alt={`${branding.churchName} Logo`} className="portal-logo" />
+              <img src={brand.logoPath} alt={`${brand.churchName} Logo`} className="portal-logo" />
             </div>
-            <h1 className="portal-church-name">{branding.churchName}</h1>
+            <h1 className="portal-church-name">{brand.churchName}</h1>
             <div className="portal-divider" />
             <p className="portal-subtitle">{isResettingPassword ? 'Reset Password' : 'Member Portal'}</p>
             <p className="portal-hint">
@@ -323,17 +325,17 @@ const PortalLogin: React.FC = () => {
             {/* Info note */}
             {!isRequestingPin && !isResettingPassword && !pinRequested && (
               <p className="portal-note">
-                Access is restricted to registered {branding.churchName} members. Visit the church office to register.
+                Access is restricted to registered {brand.churchName} members. Visit the church office to register.
               </p>
             )}
           </div>
 
           {/* Footer */}
           <div className="portal-footer">
-            {branding.websiteUrl && (
-              <a href={branding.websiteUrl} className="portal-back-link">
+          {brand.websiteUrl && (
+            <a href={brand.websiteUrl} className="portal-back-link">
                 <ArrowRight size={13} style={{ transform: 'rotate(180deg)' }} />
-                Back to {branding.churchName} Website
+                Back to {brand.churchName} Website
               </a>
             )}
           </div>

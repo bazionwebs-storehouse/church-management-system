@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Lock, AlertCircle, CheckCircle, Shield, Eye, EyeOff } from 'lucide-react';
 import { portalAuthService } from '../services/portalAuth';
 import { branding } from '../../config/branding';
+import { useBrand } from '../../config/useBrand';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -22,6 +23,7 @@ const REQUIREMENTS: Requirement[] = [
 import '../portal.css';
 
 const SetPassword: React.FC = () => {
+  const brand = useBrand();
   const navigate = useNavigate();
   const currentUser = portalAuthService.getCurrentUser();
 
@@ -104,9 +106,9 @@ const SetPassword: React.FC = () => {
         <div className="portal-card">
           <div className="portal-header">
             <div className="portal-logo-wrap">
-              <img src={branding.logoPath} alt={`${branding.churchName} Logo`} className="portal-logo" />
+              <img src={brand.logoPath} alt={`${brand.churchName} Logo`} className="portal-logo" />
             </div>
-            <h1 className="portal-church-name">{branding.churchName}</h1>
+            <h1 className="portal-church-name">{brand.churchName}</h1>
             <div className="portal-divider" />
             <p className="portal-subtitle">Set Your Password</p>
             <p className="portal-hint">This is your first login. Create a strong password to secure your account.</p>

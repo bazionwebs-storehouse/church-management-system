@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { User, RecycleBinItem } from '../userData';
 import { Member } from '../memberData';
 import { Group } from '../GroupsManagementPage';
@@ -11,33 +11,33 @@ import { Branch } from '../branchData';
 import { PermissionRequest } from '../PermissionRequest';
 import { SmsRecord } from '../smsData';
 
-import DashboardPage from '../DashboardPage';
-import MembersPage from '../MembersPage';
-import AddMemberPage from '../AddMemberPage';
-import MemberDetailsPage from '../MemberDetailsPage';
-import GroupsManagementPage from '../GroupsManagementPage';
-import BirthdaysPage from '../BirthdaysPage';
-import AttendanceModule from '../AttendanceModule';
-import MarkAttendancePage from '../MarkAttendancePage';
-import FinancePage from '../FinancePage';
-import AddTransactionPage from '../AddTransactionPage';
-import SmsBroadcastPage from '../SmsBroadcastPage';
-import EquipmentPage from '../EquipmentPage';
-import AddEquipmentPage from '../AddEquipmentPage';
-import AddMaintenancePage from '../AddMaintenancePage';
-import VisitorsModule from '../VisitorsModule';
-import ReportsModule from '../ReportsModule';
-import UsersPage from '../UsersPage';
-import AddUserPage from '../AddUserPage';
-import SettingsPage from '../SettingsPage';
-import AiFeaturesPage from '../AiFeaturesPage';
-import HelpdeskPage from '../HelpdeskPage';
-import BranchesPage from '../BranchesPage';
-import AddBranchPage from '../AddBranchPage';
-import DataPersonnelManagementPage from '../DataPersonnelManagementPage';
-import RecycleBinPage from '../RecycleBinPage';
-import PermissionRequestsPage from '../PermissionRequestsPage';
-import UserSessionMonitor from '../UserSessionMonitor';
+const DashboardPage = React.lazy(() => import('../DashboardPage'));
+const MembersPage = React.lazy(() => import('../MembersPage'));
+const AddMemberPage = React.lazy(() => import('../AddMemberPage'));
+const MemberDetailsPage = React.lazy(() => import('../MemberDetailsPage'));
+const GroupsManagementPage = React.lazy(() => import('../GroupsManagementPage'));
+const BirthdaysPage = React.lazy(() => import('../BirthdaysPage'));
+const AttendanceModule = React.lazy(() => import('../AttendanceModule'));
+const MarkAttendancePage = React.lazy(() => import('../MarkAttendancePage'));
+const FinancePage = React.lazy(() => import('../FinancePage'));
+const AddTransactionPage = React.lazy(() => import('../AddTransactionPage'));
+const SmsBroadcastPage = React.lazy(() => import('../SmsBroadcastPage'));
+const EquipmentPage = React.lazy(() => import('../EquipmentPage'));
+const AddEquipmentPage = React.lazy(() => import('../AddEquipmentPage'));
+const AddMaintenancePage = React.lazy(() => import('../AddMaintenancePage'));
+const VisitorsModule = React.lazy(() => import('../VisitorsModule'));
+const ReportsModule = React.lazy(() => import('../ReportsModule'));
+const UsersPage = React.lazy(() => import('../UsersPage'));
+const AddUserPage = React.lazy(() => import('../AddUserPage'));
+const SettingsPage = React.lazy(() => import('../SettingsPage'));
+const AiFeaturesPage = React.lazy(() => import('../AiFeaturesPage'));
+const HelpdeskPage = React.lazy(() => import('../HelpdeskPage'));
+const BranchesPage = React.lazy(() => import('../BranchesPage'));
+const AddBranchPage = React.lazy(() => import('../AddBranchPage'));
+const DataPersonnelManagementPage = React.lazy(() => import('../DataPersonnelManagementPage'));
+const RecycleBinPage = React.lazy(() => import('../RecycleBinPage'));
+const PermissionRequestsPage = React.lazy(() => import('../PermissionRequestsPage'));
+const UserSessionMonitor = React.lazy(() => import('../UserSessionMonitor'));
 
 export interface AppRouterProps {
   activePage: string;
@@ -139,7 +139,8 @@ export interface AppRouterProps {
 const AppRouter: React.FC<AppRouterProps> = (props) => {
   const { activePage } = props;
 
-  switch (activePage) {
+  const page = (() => {
+    switch (activePage) {
     case 'Dashboard':
       return (
         <DashboardPage
@@ -426,7 +427,18 @@ const AppRouter: React.FC<AppRouterProps> = (props) => {
           currentUser={props.currentUser}
         />
       );
-  }
+    }
+  })();
+
+  return (
+    <Suspense
+      fallback={
+        <div className="h-full w-full flex items-center justify-center text-gray-500 animate-pulse">Loading…</div>
+      }
+    >
+      {page}
+    </Suspense>
+  );
 };
 
 export default AppRouter;

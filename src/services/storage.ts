@@ -9,6 +9,8 @@ export interface ChurchInfo {
   address: string;
   phone: string;
   email: string;
+  logoUrl?: string;
+  website?: string;
 }
 
 export interface SmsConfig {
@@ -46,7 +48,7 @@ const SETTINGS_KEY = 'hkm_app_settings';
 const API_KEY_KEY = 'hkm_sms_api_key';
 
 const defaultSettings: AppSettings = {
-  churchInfo: { name: branding.churchName, address: '', phone: '', email: '' },
+  churchInfo: { name: branding.churchName, address: '', phone: '', email: '', logoUrl: '', website: '' },
   smsConfig: {
     apiKey: '',
     provider: 'arkesel',
@@ -86,6 +88,9 @@ export const storage = {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       if (settings.smsConfig?.apiKey) {
         localStorage.setItem(API_KEY_KEY, settings.smsConfig.apiKey);
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('hkm_app_settings_saved'));
       }
     },
   },

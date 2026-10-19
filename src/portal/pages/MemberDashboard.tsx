@@ -32,7 +32,8 @@ import {
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { compressImage } from '../../utils/imageUtils';
-import { branding } from '../../config/branding';
+import { branding, getBrand } from '../../config/branding';
+import { useBrand } from '../../config/useBrand';
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface MemberData {
   id: string;
@@ -356,6 +357,7 @@ const ErrorState = ({ onRetry }: { onRetry: () => void }) => (
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 const MemberDashboard: React.FC = () => {
+  const brand = useBrand();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -444,7 +446,7 @@ const MemberDashboard: React.FC = () => {
     // Add Logo text (placeholder if we can't load image sync)
     doc.setTextColor(212, 175, 55); // Gold
     doc.setFontSize(16);
-    doc.text((churchInfo?.name || branding.churchName).toUpperCase(), pageWidth / 2, 20, { align: 'center' });
+    doc.text((churchInfo?.name || getBrand().churchName).toUpperCase(), pageWidth / 2, 20, { align: 'center' });
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(10);
     doc.text('Member Giving Statement', pageWidth / 2, 28, { align: 'center' });
@@ -1501,15 +1503,15 @@ const MemberDashboard: React.FC = () => {
         >
           <Menu size={22} />
         </button>
-        <span style={{ color: BRAND.white, fontWeight: 700, fontSize: '0.9rem' }}>{branding.churchName} Member Portal</span>
+        <span style={{ color: BRAND.white, fontWeight: 700, fontSize: '0.9rem' }}>{brand.churchName} Member Portal</span>
       </div>
 
       {/* Sidebar */}
       <div className={`portal-sidebar${mobileSidebarOpen ? ' open' : ''}`} style={S.sidebar}>
         <div style={S.sidebarHeader}>
           <div style={S.logoRow}>
-            <img src={branding.logoPath} alt={branding.churchName} style={S.logoImg} />
-            <span style={S.logoText}>{branding.churchName}</span>
+<img src={brand.logoPath} alt={brand.churchName} style={S.logoImg} />
+<span style={S.logoText}>{brand.churchName}</span>
           </div>
           <div style={S.goldDivider} />
           {memberData?.avatar ? (

@@ -17,8 +17,9 @@ import DatabaseManagement from './DatabaseManagement';
 import { User } from './userData';
 import { storage, AppSettings } from '../services/storage';
 import { useTheme, ThemeName } from './ThemeContext';
-import { Palette, AtSign } from 'lucide-react';
+import { Palette, AtSign, Image as ImageIcon } from 'lucide-react';
 import { useApolloClient, gql } from '@apollo/client';
+import { compressImage } from '../utils/imageUtils';
 
 const GET_CHURCH_SETTINGS = gql`
   query GetAdminChurchSettings {
@@ -30,6 +31,8 @@ const GET_CHURCH_SETTINGS = gql`
           address
           phone
           email
+          website
+          logo_url
         }
       }
     }
@@ -37,9 +40,16 @@ const GET_CHURCH_SETTINGS = gql`
 `;
 
 const UPDATE_CHURCH_SETTINGS = gql`
-  mutation UpdateAdminChurchSettings($name: String!, $address: String, $phone: String, $email: String) {
+  mutation UpdateAdminChurchSettings(
+    $name: String!
+    $address: String
+    $phone: String
+    $email: String
+    $website: String
+    $logo_url: String
+  ) {
     updatechurch_settingsCollection(
-      set: { name: $name, address: $address, phone: $phone, email: $email }
+      set: { name: $name, address: $address, phone: $phone, email: $email, website: $website, logo_url: $logo_url }
       filter: { id: { eq: 1 } }
     ) {
       records {
@@ -138,6 +148,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ currentUser }) => {
             address: node.address || data.churchInfo.address,
             phone: node.phone || data.churchInfo.phone,
             email: node.email || data.churchInfo.email,
+            website: node.website || data.churchInfo.website || '',
+            logoUrl: node.logo_url || data.churchInfo.logoUrl || '',
           };
         }
       } catch {
@@ -163,6 +175,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ currentUser }) => {
             address: settings.churchInfo.address,
             phone: settings.churchInfo.phone,
             email: settings.churchInfo.email,
+            website: settings.churchInfo.website || '',
+            logo_url: settings.churchInfo.logoUrl || '',
           },
         });
         if (errors) {
@@ -181,6 +195,30 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ currentUser }) => {
     setSettings({
       ...settings,
       churchInfo: { ...settings.churchInfo, [e.target.name]: e.target.value },
+    });
+  };
+
+  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !settings) return;
+    try {
+      const dataUrl = await compressImage(file, 200, 200);
+      setSettings({
+        ...settings,
+        churchInfo: { ...settings.churchInfo, logoUrl: dataUrl },
+      });
+    } catch (error) {
+      console.error('[Settings] Failed to process logo image:', error);
+      alert('Could not process the image. Please try a different file.');
+    }
+    e.target.value = '';
+  };
+
+  const handleLogoClear = () => {
+    if (!settings) return;
+    setSettings({
+      ...settings,
+      churchInfo: { ...settings.churchInfo, logoUrl: '' },
     });
   };
 
@@ -305,6 +343,53 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ currentUser }) => {
                       onChange={updateChurchInfo}
                       icon={MailIcon}
                     />
+                    <InputField
+                      name="website"
+                      label="Church Website"
+                      type="url"
+                      placeholder="https://yourchurch.org"
+                      value={settings.churchInfo.website || ''}
+                      onChange={updateChurchInfo}
+                      icon={LocationMarkerIcon}
+                    />
+                  </div>
+                  <div className="mt-8">
+                    <h3 className="text-md font-medium text-gray-700 mb-3 flex items-center">
+                      <ImageIcon className="h-5 w-5 mr-2 text-gray-500" />
+                      Church Logo
+                    </h3>
+                    <div className="flex items-center gap-4">
+                      {settings.churchInfo.logoUrl ? (
+                        <img
+                          src={settings.churchInfo.logoUrl}
+                          alt="Church Logo"
+                          className="h-16 w-16 rounded-md object-contain border bg-gray-50"
+                        />
+                      ) : (
+                        <div className="h-16 w-16 rounded-md border border-dashed bg-gray-50 flex items-center justify-center text-gray-400">
+                          <ImageIcon className="h-6 w-6" />
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoChange}
+                        className="text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-church-green file:text-white file:font-semibold file:cursor-pointer hover:file:bg-church-green-dark"
+                      />
+                      {settings.churchInfo.logoUrl && (
+                        <button
+                          type="button"
+                          onClick={handleLogoClear}
+                          className="text-sm text-red-600 hover:text-red-800 underline"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Appears in the sidebar, login pages and the member portal. Saved as a compressed image
+                      (PNG/JPG).
+                    </p>
                   </div>
                   <div className="flex justify-start">
                     <button

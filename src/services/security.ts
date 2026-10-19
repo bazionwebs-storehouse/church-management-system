@@ -2,7 +2,7 @@
  * Security utilities for the Church Management System
  * Provides password hashing, encryption, session management, rate limiting, and audit logging
  */
-import { branding } from '../config/branding';
+import { getBrand } from '../config/branding';
 
 interface WindowWithElectron {
   electronAPI?: {
@@ -830,7 +830,7 @@ async function get2FASecrets(): Promise<
 }
 
 // Generate QR code URL for authenticator apps (Google Authenticator, Authy, etc.)
-export function get2FAQRCodeURL(email: string, secret: string, issuer: string = branding.churchName): string {
+export function get2FAQRCodeURL(email: string, secret: string, issuer: string = getBrand().churchName): string {
   const encodedIssuer = encodeURIComponent(issuer);
   const encodedEmail = encodeURIComponent(email);
   const otpauthUrl = `otpauth://totp/${encodedIssuer}:${encodedEmail}?secret=${secret}&issuer=${encodedIssuer}&algorithm=SHA1&digits=${TOTP_DIGITS}&period=${TOTP_PERIOD}`;

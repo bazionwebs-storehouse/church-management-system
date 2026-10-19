@@ -17,6 +17,7 @@ import { useToast } from './ToastContext';
 
 import { useTheme } from './ThemeContext';
 import { branding } from '../config/branding';
+import { useBrand } from '../config/useBrand';
 import { useMembers } from '../hooks/useMembers';
 import { useTransactions } from '../hooks/useTransactions';
 import { useAttendance } from '../hooks/useAttendance';
@@ -43,6 +44,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ currentUser, onLogout }) => {
     return sessionStorage.getItem('hkm_active_page') || 'Dashboard';
   });
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const brand = useBrand();
 
   // Real-time data hooks
   const {
@@ -157,9 +159,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ currentUser, onLogout }) => {
         <div className="lg:hidden bg-church-green text-white p-4 flex justify-between items-center z-20">
           <div className="flex items-center space-x-2">
             <div className="bg-white/20 p-1 rounded-full">
-              <img src={branding.logoPath} alt="Logo" className="h-8 w-8 object-contain rounded-full" />
+              <img src={brand.logoPath} alt="Logo" className="h-8 w-8 object-contain rounded-full" />
             </div>
-            <span className="font-bold">{branding.churchName}</span>
+            <span className="font-bold">{brand.churchName}</span>
           </div>
           <button
             onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}

@@ -3,7 +3,7 @@ import { Equipment, EquipmentCondition, equipmentCategories } from './equipmentD
 import { ArrowLeftIcon, EquipmentIcon } from './Icons';
 import { InputField, SelectField, TextAreaField } from './FormControls';
 import { CheckCircle, AlertTriangle } from 'lucide-react';
-import { branding } from '../config/branding';
+import { useBrand } from '../config/useBrand';
 
 interface AddEquipmentPageProps {
   onBack: () => void;
@@ -12,6 +12,7 @@ interface AddEquipmentPageProps {
 }
 
 const AddEquipmentPage: React.FC<AddEquipmentPageProps> = ({ onBack, onSave, equipmentToEdit }) => {
+  const brand = useBrand();
   const isEditMode = !!equipmentToEdit;
 
   const [formState, setFormState] = useState({
@@ -96,7 +97,7 @@ const AddEquipmentPage: React.FC<AddEquipmentPageProps> = ({ onBack, onSave, equ
         <div className="border-b border-gray-200 pb-4 mb-6">
           <p className="flex items-center text-green-700 font-medium">
             <EquipmentIcon className="h-6 w-6 mr-2 p-1 bg-green-100 rounded-full" />
-            Record a new equipment item for {branding.churchName}
+              Record a new equipment item for {brand.churchName}
           </p>
         </div>
 

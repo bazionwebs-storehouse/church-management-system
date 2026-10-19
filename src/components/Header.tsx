@@ -3,7 +3,7 @@ import { UserIcon, LogoutIcon, ChevronRightIcon } from './Icons';
 import { User } from './userData';
 import { useTheme, ThemeName } from './ThemeContext';
 import { Sun, Moon, ArrowLeft } from 'lucide-react';
-import { branding } from '../config/branding';
+import { useBrand } from '../config/useBrand';
 
 interface HeaderProps {
   activePage: string;
@@ -46,6 +46,7 @@ const pageHierarchy: Record<string, { parent?: string; title: string; icon?: str
 const Header: React.FC<HeaderProps> = ({ activePage, user, onLogout, onNavigate, onMobileMenuToggle }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { theme, setTheme, mode, setMode, colors } = useTheme();
+  const brand = useBrand();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const themes = ['green', 'blue', 'purple', 'orange', 'dark'];
@@ -105,13 +106,13 @@ const Header: React.FC<HeaderProps> = ({ activePage, user, onLogout, onNavigate,
         <div className="flex items-center space-x-2 sm:space-x-4">
           <div className="bg-sky-100 p-1 rounded-full border border-white/20 shadow-md flex items-center justify-center">
             <img
-              src={branding.logoPath}
-              alt={`${branding.churchName} Logo`}
+              src={brand.logoPath}
+              alt={`${brand.churchName} Logo`}
               className="h-8 sm:h-10 lg:h-12 w-auto object-contain rounded-full"
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm sm:text-base lg:text-lg font-bold text-white leading-tight">{branding.churchName}</span>
+            <span className="text-sm sm:text-base lg:text-lg font-bold text-white leading-tight">{brand.churchName}</span>
             <span className="text-xs text-white/80 hidden sm:block">Management</span>
           </div>
 

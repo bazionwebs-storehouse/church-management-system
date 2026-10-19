@@ -1,6 +1,6 @@
 import React from 'react';
 import { RegistrationData } from '../EnterpriseRegistration';
-import { branding } from '../../config/branding';
+import { useBrand } from '../../config/useBrand';
 
 interface RegistrationStepTermsProps {
   formData: RegistrationData;
@@ -8,6 +8,7 @@ interface RegistrationStepTermsProps {
 }
 
 export const RegistrationStepTerms: React.FC<RegistrationStepTermsProps> = ({ formData, onChange }) => {
+  const brand = useBrand();
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Terms & Privacy</h3>
@@ -26,7 +27,7 @@ export const RegistrationStepTerms: React.FC<RegistrationStepTermsProps> = ({ fo
             <a href="#terms" onClick={(e) => e.preventDefault()} className="text-blue-600 hover:underline">
               Terms of Service
             </a>{' '}
-            and acknowledge the responsibilities of account usage within {branding.churchName}.
+            and acknowledge the responsibilities of account usage within {brand.churchName}.
           </span>
         </label>
 

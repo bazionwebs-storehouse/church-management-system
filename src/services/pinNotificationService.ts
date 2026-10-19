@@ -14,7 +14,7 @@
  * must always succeed even if a notification fails.
  */
 
-import { branding, portalUrlFallback } from '../config/branding';
+import { branding, getBrand, portalUrlFallback } from '../config/branding';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -185,7 +185,7 @@ async function sendSmsViaAfricasTalking(
   }
 
   const message =
-    `${branding.churchName}: Dear ${payload.memberName}, your Member Portal has been activated! ` +
+    `${getBrand().churchName}: Dear ${payload.memberName}, your Member Portal has been activated! ` +
     `Your Member ID: ${payload.memberId} | PIN: ${payload.pin} ` +
     `Login at: ${settings.portalUrl} — Keep your PIN private.`;
 
@@ -250,6 +250,7 @@ function buildPinEmailHtml(
   portalUrl: string,
   orgEmail?: string,
 ): string {
+  const brand = getBrand();
   const portalOrigin = (() => {
     try {
       return portalUrl ? new URL(portalUrl).origin : '';
@@ -257,9 +258,12 @@ function buildPinEmailHtml(
       return '';
     }
   })();
-  const logoUrl = `${portalOrigin || (typeof window !== 'undefined' ? window.location.origin : '')}${branding.logoPath}`;
-  const websiteLink = branding.websiteUrl
-    ? `<a href="${branding.websiteUrl}" style="color:#94a3b8;text-decoration:none;">${branding.websiteUrl.replace(/^https?:\/\//, '')}</a>&nbsp;&bull;&nbsp;`
+  const runtimeLogo = brand.logoPath;
+  const isHttpLogo = /^https?:\/\//.test(runtimeLogo);
+  const originForEmail = portalOrigin || (typeof window !== 'undefined' ? window.location.origin : '');
+  const logoUrl = isHttpLogo ? runtimeLogo : `${originForEmail}${branding.logoPath}`;
+  const websiteLink = brand.websiteUrl
+    ? `<a href="${brand.websiteUrl}" style="color:#94a3b8;text-decoration:none;">${brand.websiteUrl.replace(/^https?:\/\//, '')}</a>&nbsp;&bull;&nbsp;`
     : '';
   const year = new Date().getFullYear();
 
@@ -269,7 +273,7 @@ function buildPinEmailHtml(
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Your ${branding.churchName} Member Portal PIN</title>
+  <title>Your ${brand.churchName} Member Portal PIN</title>
   <!--[if mso]>
   <style type="text/css">
     body, table, td { font-family: Arial, Helvetica, sans-serif !important; }
@@ -299,7 +303,7 @@ function buildPinEmailHtml(
               <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:36px auto 28px;">
                 <tr>
                   <td align="center">
-                    <img src="${logoUrl}" alt="${branding.churchName} Logo" width="90" height="90"
+                    <img src="${logoUrl}" alt="${brand.churchName} Logo" width="90" height="90"
                          style="display:block;width:90px;height:90px;border-radius:50%;
                                 border:2px solid rgba(212,175,55,0.6);
                                 background-color:#e0f2fe;object-fit:contain;
@@ -310,7 +314,7 @@ function buildPinEmailHtml(
                   <td align="center" style="padding:16px 40px 0;">
                     <p style="margin:0;color:#d4af37;font-family:Arial,Helvetica,sans-serif;
                                font-size:11px;font-weight:700;letter-spacing:3px;
-                               text-transform:uppercase;">${branding.churchName}</p>
+                               text-transform:uppercase;">${brand.churchName}</p>
                     <div style="width:48px;height:1px;background:linear-gradient(90deg,transparent,#d4af37,transparent);
                                 margin:12px auto 10px;"></div>
                     <h1 style="margin:0;color:#ffffff;font-family:Arial,Helvetica,sans-serif;
@@ -343,7 +347,7 @@ function buildPinEmailHtml(
               </p>
               <p style="margin:0 0 28px;color:#475569;font-family:Arial,Helvetica,sans-serif;
                          font-size:15px;line-height:1.75;">
-                Welcome to the <strong style="color:#0f172a;">${branding.churchName} Member Portal</strong>.
+                Welcome to the <strong style="color:#0f172a;">${brand.churchName} Member Portal</strong>.
                 Your account has been activated following confirmation of your Registration Fee.
                 Use the secure credentials below to sign in.
               </p>
@@ -436,7 +440,7 @@ function buildPinEmailHtml(
                     <p style="margin:0;color:#78350f;font-family:Arial,Helvetica,sans-serif;
                                font-size:13px;line-height:1.65;">
                       &#9888;&#65039; <strong>Keep your PIN private.</strong>
-                      ${branding.churchName} staff will <strong>never</strong> ask you to share your PIN or password.
+                      ${brand.churchName} staff will <strong>never</strong> ask you to share your PIN or password.
                       If you did not expect this email, please contact the church office immediately.
                     </p>
                   </td>
@@ -449,7 +453,7 @@ function buildPinEmailHtml(
               <p style="margin:0;color:#94a3b8;font-family:Arial,Helvetica,sans-serif;
                          font-size:13px;line-height:1.7;">
                 Blessings,<br />
-                <strong style="color:#475569;">The ${branding.churchName} Team</strong>
+                <strong style="color:#475569;">The ${brand.churchName} Team</strong>
               </p>
             </td>
           </tr>
@@ -459,7 +463,7 @@ function buildPinEmailHtml(
             <td style="background:#f8fafc;border-top:1px solid #e2e8f0;
                         padding:22px 44px;text-align:center;">
               <p style="margin:0 0 6px;color:#94a3b8;font-family:Arial,Helvetica,sans-serif;font-size:12px;">
-                &copy; ${year} ${branding.churchName}
+                &copy; ${year} ${brand.churchName}
               </p>
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;">
                 ${websiteLink}
@@ -515,9 +519,9 @@ async function sendEmailViaResend(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: `${branding.churchName} <${settings.resendFromEmail}>`,
+          from: `${getBrand().churchName} <${settings.resendFromEmail}>`,
           to: [payload.email],
-          subject: `Your ${branding.churchName} Member Portal PIN — Keep This Private`,
+          subject: `Your ${getBrand().churchName} Member Portal PIN — Keep This Private`,
           html,
         }),
       });

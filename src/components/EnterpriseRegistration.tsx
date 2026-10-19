@@ -3,6 +3,7 @@ import { ArrowLeftIcon, UserPlusIcon, ArrowRightIcon } from './Icons';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
 import { User as AppUser } from './userData';
 import { branding } from '../config/branding';
+import { useBrand } from '../config/useBrand';
 import {
   PasswordCriteria,
   validateEmail,
@@ -44,6 +45,7 @@ export const EnterpriseRegistration: React.FC<EnterpriseRegistrationProps> = ({
   onResendVerification,
 }) => {
   // Form state
+  const brand = useBrand();
   const [formData, setFormData] = useState<RegistrationData>({
     email: '',
     password: '',
@@ -258,10 +260,10 @@ export const EnterpriseRegistration: React.FC<EnterpriseRegistrationProps> = ({
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="text-center mb-8">
             <div className="inline-block mb-4">
-              <img src={branding.logoPath} alt={`${branding.churchName} Logo`} className="h-16 w-auto mx-auto" />
+              <img src={brand.logoPath} alt={`${brand.churchName} Logo`} className="h-16 w-auto mx-auto" />
             </div>
             <h1 className="text-2xl font-bold text-gray-800">Create Your Account</h1>
-            <p className="text-gray-500">Join {branding.churchName} with enterprise-grade security</p>
+            <p className="text-gray-500">Join {brand.churchName} with enterprise-grade security</p>
           </div>
 
           <div className="flex items-center justify-center mb-8">

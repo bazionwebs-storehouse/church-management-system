@@ -13,7 +13,7 @@ import {
   UserIcon,
 } from './Icons';
 import { User as AppUser } from './userData';
-import { branding } from '../config/branding';
+import { useBrand } from '../config/useBrand';
 import { useTheme } from './ThemeContext';
 import EnterpriseRegistration, { RegistrationData, RegistrationResult } from './EnterpriseRegistration';
 
@@ -44,6 +44,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
   onResendVerification,
 }) => {
   const { colors } = useTheme();
+  const brand = useBrand();
   const [viewState, setViewState] = useState<
     'login' | 'register' | 'enterprise-register' | 'reset' | 'change-password'
   >('login');
@@ -161,12 +162,12 @@ const LoginPage: React.FC<LoginPageProps> = ({
           <div className="text-center mb-8">
             <div className="inline-block mb-4">
               <img
-                src={branding.logoPath}
-                alt={`${branding.churchName} Logo`}
+                src={brand.logoPath}
+                alt={`${brand.churchName} Logo`}
                 className="h-20 w-auto mx-auto object-contain"
               />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800">{branding.churchName}</h1>
+            <h1 className="text-2xl font-bold text-gray-800">{brand.churchName}</h1>
             <p className="text-gray-500">{getTitle()}</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -443,7 +444,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
             )}
           </div>
 
-          <p className="text-center text-sm text-gray-500 mt-8">{branding.churchName}</p>
+          <p className="text-center text-sm text-gray-500 mt-8">{brand.churchName}</p>
         </div>
       </div>
     </div>

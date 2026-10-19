@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AiIcon, PaperAirplaneIcon } from './Icons';
 import { TextAreaField } from './FormControls';
 import { generateWithGemini } from '../services/geminiClient';
-import { branding } from '../config/branding';
+import { getBrand } from '../config/branding';
 
 const suggestions = [
   'A reminder for our weekly prayer meeting this Wednesday.',
@@ -28,7 +28,7 @@ const AiFeaturesPage: React.FC = () => {
     setError('');
 
     try {
-      const fullPrompt = `You are a helpful assistant for ${branding.churchName.toUpperCase()}. Your task is to write a warm, clear, and concise church announcement suitable for a bulletin or to be read aloud. The announcement should be based on the following topic: "${prompt}". Keep it under 150 words.`;
+      const fullPrompt = `You are a helpful assistant for ${getBrand().churchName.toUpperCase()}. Your task is to write a warm, clear, and concise church announcement suitable for a bulletin or to be read aloud. The announcement should be based on the following topic: "${prompt}". Keep it under 150 words.`;
 
       const text = await generateWithGemini(fullPrompt, { model: 'gemini-2.5-flash' });
 
