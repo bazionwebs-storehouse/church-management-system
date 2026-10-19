@@ -1,0 +1,135 @@
+{
+  "name": "church-management-system",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "sms-backend"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:sms": "npm --prefix sms-backend run build",
+    "dev:sms": "npm --prefix sms-backend run start:dev",
+    "install:sms": "npm --prefix sms-backend install",
+    "build:all": "npm run build && npm run build:sms",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
+    "electron:build": "npm run build && electron-builder",
+    "electron:start": "electron .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "build": {
+    "appId": "org.churchmanagement.system",
+    "productName": "Church Management System",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.ico",
+      "sign": null,
+      "signingHashAlgorithms": []
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Church Management System"
+    },
+    "portable": {
+      "artifactName": "Church-Management-System-Portable.exe"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "public/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "public/icon.png"
+    }
+  },
+  "dependencies": {
+    "@apollo/client": "^3.14.0",
+    "@clerk/clerk-react": "^5.61.6",
+    "@clerk/shared": "^3.47.4",
+    "@clerk/themes": "^2.4.46",
+    "@google/genai": "^1.34.0",
+    "@types/react-router-dom": "^5.3.3",
+    "graphql": "^16.12.0",
+    "graphql-ws": "^6.1.0",
+    "idb": "^8.0.3",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "lucide-react": "^0.344.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-image-crop": "^11.1.2",
+    "react-router": "^7.18.2",
+    "react-router-dom": "^7.18.2",
+    "recharts": "^2.10.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "@typescript-eslint/eslint-plugin": "^8.64.0",
+    "@typescript-eslint/parser": "^8.64.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.18",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^43.1.1",
+    "electron-builder": "^26.15.3",
+    "electron-squirrel-startup": "^1.0.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.7.0",
+    "husky": "^9.1.7",
+    "jsdom": "^29.1.1",
+    "lint-staged": "^17.0.8",
+    "postcss": "^8.5.3",
+    "prettier": "^3.9.5",
+    "tailwindcss": "^3.4.1",
+    "ts-morph": "^28.0.0",
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^8.64.0",
+    "vite": "^7.3.6",
+    "vitest": "^4.1.10",
+    "wait-on": "^7.2.0"
+  },
+  "overrides": {
+    "fast-uri": "^3.1.5",
+    "postcss": "^8.5.3",
+    "undici": "^7.29.0"
+  }
+}

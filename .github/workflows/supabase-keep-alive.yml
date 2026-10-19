@@ -1,0 +1,138 @@
+name: Supabase Keep-Alive Ping
+
+# Supabase free tier pauses projects after 7 days of inactivity.
+# This workflow pings the Supabase REST API every 2 days to prevent that,
+# giving a comfortable 5-day buffer before the 7-day pause threshold.
+#
+# HOW IT WORKS:
+#   - Runs on a schedule (every 2 days at 06:00 UTC)
+#   - Makes a GET request (NOT HEAD — HEAD doesn't trigger real DB activity)
+#     to the members REST endpoint, forcing PostgreSQL to execute a query
+#   - Uses the service_role key to bypass RLS (anon key is blocked by RLS
+#     policies requiring 'authenticated' role on the members table)
+#   - Reports the HTTP status and response body to confirm the DB is alive
+#   - Can also be triggered manually via the GitHub Actions UI
+#
+# REQUIRED SECRETS:
+#   - SUPABASE_SERVICE_ROLE_KEY  →  service role key (bypasses RLS)
+#     ⚠️  You MUST add this secret in GitHub → Settings → Secrets → Actions
+#     Find it in: Supabase Dashboard → Settings → API → service_role key
+#   - VITE_SUPABASE_ANON_KEY    →  fallback if service_role key is not set
+#
+# REQUIRED VARS (already set for deploy.yml):
+#   - VITE_SUPABASE_GRAPHQL_URL  →  used to derive the REST base URL
+
+on:
+  schedule:
+    # Every 2 days at 06:00 UTC  (day 1, 3, 5, 7, 9, ...)
+    - cron: '0 6 */2 * *'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual ping'
+        required: false
+        default: 'Manual keep-alive trigger'
+
+jobs:
+  keep-alive:
+    name: Ping Supabase Database
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Derive REST base URL from GraphQL URL
+        id: urls
+        env:
+          GRAPHQL_URL: ${{ vars.VITE_SUPABASE_GRAPHQL_URL }}
+        run: |
+          # Strip the /graphql/v1 suffix to get the base URL
+          REST_URL="${GRAPHQL_URL%/graphql/v1}/rest/v1"
+          echo "REST_URL=$REST_URL" >> "$GITHUB_OUTPUT"
+          echo "Derived REST URL: $REST_URL"
+
+      - name: Select API key (service_role preferred, anon fallback)
+        id: key
+        env:
+          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -n "$SERVICE_KEY" ]; then
+            echo "api_key=$SERVICE_KEY" >> "$GITHUB_OUTPUT"
+            echo "key_type=service_role" >> "$GITHUB_OUTPUT"
+            echo "Using service_role key (bypasses RLS) ✅"
+          else
+            echo "api_key=$ANON_KEY" >> "$GITHUB_OUTPUT"
+            echo "key_type=anon" >> "$GITHUB_OUTPUT"
+            echo "::warning::SUPABASE_SERVICE_ROLE_KEY not set — falling back to anon key. RLS may block the query. Add the service_role key in GitHub Settings → Secrets → Actions."
+          fi
+
+      - name: Ping database with GET request
+        id: ping
+        env:
+          API_KEY: ${{ steps.key.outputs.api_key }}
+          KEY_TYPE: ${{ steps.key.outputs.key_type }}
+          REST_URL: ${{ steps.urls.outputs.REST_URL }}
+        run: |
+          echo "Pinging: $REST_URL/members (key: $KEY_TYPE)"
+          echo "Method: GET (forces real PostgreSQL query execution)"
+
+          # Use GET (not HEAD!) so the request reaches PostgreSQL.
+          # HEAD requests are answered by the API gateway without touching the DB.
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            --max-time 30 \
+            "$REST_URL/members?select=id&limit=1" \
+            -H "apikey: $API_KEY" \
+            -H "Authorization: Bearer $API_KEY" \
+            -H "Prefer: count=exact")
+
+          # Split response body and HTTP status
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "HTTP status: $HTTP_STATUS"
+          echo "Response body: $BODY"
+          echo "http_status=$HTTP_STATUS" >> "$GITHUB_OUTPUT"
+
+          if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
+            echo "::error::Supabase ping returned HTTP $HTTP_STATUS — project may be paused or unreachable."
+            echo "::error::Response: $BODY"
+            exit 1
+          fi
+
+          echo "✅ Database responded with HTTP $HTTP_STATUS"
+
+      - name: Fetch live member count
+        env:
+          API_KEY: ${{ steps.key.outputs.api_key }}
+          REST_URL: ${{ steps.urls.outputs.REST_URL }}
+        run: |
+          # GET with count=exact — the Content-Range header carries the total
+          HEADERS=$(curl -s -D - -o /dev/null \
+            --max-time 30 \
+            "$REST_URL/members?select=id&limit=1" \
+            -H "apikey: $API_KEY" \
+            -H "Authorization: Bearer $API_KEY" \
+            -H "Prefer: count=exact")
+
+          CONTENT_RANGE=$(echo "$HEADERS" | grep -i "content-range:" | tr -d '\r')
+          echo "Content-Range: $CONTENT_RANGE"
+
+          # Extract total  e.g.  "content-range: 0-0/42"  →  42
+          TOTAL=$(echo "$CONTENT_RANGE" | sed 's|.*\/||')
+
+          if [ -z "$TOTAL" ] || [ "$TOTAL" = "*" ] || [ "$TOTAL" = "0" ]; then
+            echo "::warning::Member count is '$TOTAL'. If using anon key, this is expected (RLS blocks access). Add SUPABASE_SERVICE_ROLE_KEY for accurate counts."
+          else
+            echo "✅ Supabase is awake — live member count: $TOTAL"
+          fi
+
+      - name: Report success
+        if: success()
+        run: |
+          echo "::notice::✅ Supabase keep-alive ping succeeded at $(date -u '+%Y-%m-%d %H:%M UTC')"
+
+      - name: Report failure
+        if: failure()
+        run: |
+          echo "::error::❌ Supabase keep-alive ping FAILED. Check if the project is paused at:"
+          echo "::error::   https://supabase.com/dashboard/project/tkzxzriivbbzdvjgrdhk"

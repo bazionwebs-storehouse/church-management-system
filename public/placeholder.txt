@@ -1,0 +1,9 @@
+This folder contains app icons for desktop builds.
+
+Add the following files for proper desktop app icons:
+- icon.ico (Windows)
+- icon.icns (macOS)
+- icon.png (Linux, 512x512 recommended)
+
+You can use the church logo (church-logo.png in this folder) as the source.
+Convert it using online tools like https://convertio.co/
