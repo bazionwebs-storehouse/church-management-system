@@ -104,7 +104,7 @@ jobs:
         VITE_MEMBER_ID_PREFIX: ${{ vars.VITE_MEMBER_ID_PREFIX }}
 
     - name: Setup Pages
-      uses: actions/configure-pages@v4
+      uses: actions/configure-pages@v6
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
