@@ -58,7 +58,7 @@ jobs:
         VITE_MEMBER_ID_PREFIX: ${{ vars.VITE_MEMBER_ID_PREFIX }}
 
     - name: Secret scan
-      uses: gitleaks/gitleaks-action@v2
+      uses: gitleaks/gitleaks-action@v3
       continue-on-error: true
 
   build-and-deploy:
