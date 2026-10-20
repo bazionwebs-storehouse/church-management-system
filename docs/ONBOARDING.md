@@ -98,9 +98,23 @@ npm run build   # production bundle in dist/
    - **Email Aliases** — ImprovMX API key + church domain
    - **AI Configuration** — Gemini proxy URL (optional)
 
-## 9. Update policy
+## 9. Receiving updates
 
-The template repo (`bazionwebs-storehouse/church-management-system`) receives fixes and features. To update a deployed church:
+The template repo (`bazionwebs-storehouse/church-management-system`) receives fixes and features. Church copies get them automatically:
+
+### Automatic (recommended)
+
+Every copy shipped from this template includes `.github/workflows/sync-upstream.yml`. Once a day it checks `bazionwebs-storehouse/church-management-system@master` and, if new commits exist, opens a **pull request** in the church repo. All CI gates (lint, typecheck, tests, build, audit) run on that PR — merge it and the configured deploy pipeline pushes the update live. Nothing else to configure.
+
+- To use a different upstream, set the repo variable `UPSTREAM_TEMPLATE_REPO`.
+- To pull immediately, run **Actions → Sync from Template → Run workflow**.
+- If the church made local code edits that conflict, the daily run fails with instructions for a manual merge (fix once, then automatic sync resumes).
+
+### Dependency updates
+
+`.github/dependabot.yml` is also included, opening weekly PRs for npm and GitHub Actions updates. Depend on CI gates to catch regressions before merging.
+
+### Manual (fallback)
 
 ```bash
 git remote add template https://github.com/bazionwebs-storehouse/church-management-system.git

@@ -1,0 +1,65 @@
+name: Sync from Template
+
+# Ships to every church copy. Each church repo should set the repo variable
+# UPSTREAM_TEMPLATE_REPO (defaults to bazionwebs-storehouse/church-management-system).
+# Skips itself on the template repository so it only runs downstream.
+
+on:
+  schedule:
+    - cron: '17 4 * * *' # daily, 04:17 UTC (off-peak offset)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: template-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository != 'bazionwebs-storehouse/church-management-system'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Check for new upstream commits
+        id: upstream
+        env:
+          UPSTREAM_REPO: ${{ vars.UPSTREAM_TEMPLATE_REPO || 'bazionwebs-storehouse/church-management-system' }}
+        run: |
+          git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+          git fetch upstream master
+          UPSTREAM_SHA="$(git rev-parse upstream/master)"
+          if git merge-base --is-ancestor "$UPSTREAM_SHA" HEAD; then
+            echo "has_updates=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_updates=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open update PR
+        if: steps.upstream.outputs.has_updates == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPSTREAM_REPO: ${{ vars.UPSTREAM_TEMPLATE_REPO || 'bazionwebs-storehouse/church-management-system' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B chore/template-sync
+          if git merge upstream/master --no-edit; then
+            git push -u origin chore/template-sync
+            gh pr create \
+              --base master \
+              --head chore/template-sync \
+              --title "chore: sync updates from template repository" \
+              --body "Automated update from \`$UPSTREAM_REPO\`. CI gates (lint, typecheck, tests, build, audit) run on this PR. Review and merge to apply the update." \
+              || echo "A template-sync PR is already open."
+          else
+            echo "::error::Merge conflict with local changes. Sync manually: git remote add upstream https://github.com/$UPSTREAM_REPO.git && git fetch upstream master && git merge upstream/master"
+            exit 1
+          fi

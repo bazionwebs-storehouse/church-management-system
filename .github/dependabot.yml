@@ -1,28 +1,14 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-      - "security"
-    commit-message:
-      prefix: "fix"
-      prefix-development: "chore"
-      include: "scope"
-    groups:
-      clerk:
-        patterns:
-          - "@clerk/*"
-      apollo:
-        patterns:
-          - "@apollo/*"
-          - "graphql*"
-    ignore:
-      - dependency-name: "electron"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "firebase"
-        update-types: ["version-update:semver-major"]
+      interval: 'weekly'
+  - package-ecosystem: 'npm'
+    directory: '/sms-backend'
+    schedule:
+      interval: 'weekly'
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
